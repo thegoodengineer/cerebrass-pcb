@@ -1,0 +1,64 @@
+{
+  "tools": [
+    {
+      "name": "inspect_kicad_project",
+      "description": "Parse the .kicad_sch and .kicad_pcb in a KiCad project directory and return a compact JSON summary: components (ref, value, footprint, position), nets with their pins, track widths, via/drill sizes, zones, and unrouted ratsnest connections. Never returns raw S-expressions. Coordinates are absolute KiCad millimetres.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_dir": {"type": "string", "description": "Path to the KiCad project directory."}
+        },
+        "required": ["project_dir"]
+      }
+    },
+    {
+      "name": "run_dfm_and_erc_audit",
+      "description": "Run the electrical (ERC) and manufacturing (DFM) rule checks: USB-C CC pull-downs, decoupling capacitors per IC supply pin, I2C pull-ups, power trace width (IPC-2221), fab minimum track width, copper clearance, unrouted nets, via geometry, copper-to-edge, placement grid, courtyard overlap and schematic/PCB sync. Returns {pass, summary, issues[]} where each issue has id, rule, severity, title, detail, refs, nets, at [x, y] and a suggested fix.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_dir": {"type": "string", "description": "Path to the KiCad project directory."},
+          "fab_house": {"type": "string", "enum": ["jlcpcb"], "default": "jlcpcb", "description": "Fabricator rule set."}
+        },
+        "required": ["project_dir"]
+      }
+    },
+    {
+      "name": "apply_pcb_patch",
+      "description": "Apply a batch of edits to the schematic and board (kept in sync). Placement and routing geometry is solved by the tool: components land on a clean grid next to the pad you name, tracks are routed Manhattan/45-degree on F.Cu/B.Cu with clearance verified. Send every fix in ONE call. Operation objects (field 'op'): set_pin_net {ref, pin, net} | add_component {kind: resistor|capacitor, value, pins: {\"1\": net, \"2\": net}, near: \"REF.PIN\", package?: \"0603\"} | route_net {net, width?} | reroute_net {net, width?} | set_track_width {net, width} | move_via {at: [x, y], to?: [x, y]} | delete_via {at: [x, y]} | move_footprint {ref, near?: \"REF.PIN\", to?: [x, y], rotation?} | add_track {net, layer, width?, points: [[x, y], ...]} | add_via {net, at: [x, y]} | stitch_pour {net} | rename_net {old, new} | set_value {ref, value}. Returns per-operation results and the number of connections still unrouted.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_dir": {"type": "string", "description": "Path to the KiCad project directory."},
+          "operations": {
+            "type": "array",
+            "description": "Ordered list of operations.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "op": {
+                  "type": "string",
+                  "enum": ["set_pin_net", "add_component", "route_net", "reroute_net", "ripup_net", "set_track_width", "move_via", "delete_via", "move_footprint", "add_track", "add_via", "stitch_pour", "rename_net", "set_value"]
+                }
+              },
+              "required": ["op"],
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": ["project_dir", "operations"]
+      }
+    },
+    {
+      "name": "render_board_svg",
+      "description": "Render the current board (Edge.Cuts outline, pads, F.Cu/B.Cu tracks, vias, silkscreen, ratsnest, highlighted DFM error markers and freshly patched items) and the schematic to SVG for the live dashboard. Runs automatically after every audit and patch; call it only if you need a refresh.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_dir": {"type": "string", "description": "Path to the KiCad project directory."}
+        },
+        "required": ["project_dir"]
+      }
+    }
+  ]
+}

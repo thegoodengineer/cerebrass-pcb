@@ -1,0 +1,14 @@
+.env
+node_modules/
+web/dist/
+runs/
+__pycache__/
+*.pyc
+*.tmp
+.clawboard/
+web/public/board_preview*.svg
+web/public/schematic_preview*.svg
+openclaw_config/openclaw.resolved.json
+*-backups/
+*.lck
+fp-info-cache

@@ -1,0 +1,64 @@
+{
+  "_comment": "Datasheet-derived design rules keyed by a regex matched against the symbol value / lib id. Capacitor ranges are in nF, distances are pad-to-pad on the PCB in mm.",
+  "parts": [
+    {
+      "name": "ESP32-S3-WROOM-1",
+      "match": "ESP32-S3",
+      "role": "mcu",
+      "decoupling": [
+        {"pin": "3V3", "label": "100nF", "min_nf": 68, "max_nf": 220, "max_dist_mm": 4.0},
+        {"pin": "3V3", "label": "10uF bulk", "min_nf": 4700, "max_nf": 100000, "max_dist_mm": 12.0}
+      ],
+      "notes": [
+        "3V3 needs 100 nF + 10 uF close to pin 2 (Espressif hardware design guidelines).",
+        "EN needs an RC delay: 10k pull-up to 3V3 and 1 uF to GND.",
+        "GPIO19/GPIO20 are the native USB D-/D+ pair.",
+        "Keep copper and components out of the antenna keep-out at the module's top edge."
+      ]
+    },
+    {
+      "name": "STM32 (generic)",
+      "match": "STM32",
+      "role": "mcu",
+      "decoupling": [
+        {"pin": "VDD", "label": "100nF", "min_nf": 68, "max_nf": 220, "max_dist_mm": 3.0},
+        {"pin": "VDDA", "label": "100nF", "min_nf": 68, "max_nf": 1200, "max_dist_mm": 3.0}
+      ],
+      "notes": ["One 100 nF per VDD pin plus one 4.7 uF bulk capacitor per device (AN2586 / AN4488)."]
+    },
+    {
+      "name": "BME280",
+      "match": "BME280",
+      "role": "sensor",
+      "decoupling": [
+        {"pin": "VDD", "label": "100nF", "min_nf": 68, "max_nf": 220, "max_dist_mm": 4.0},
+        {"pin": "VDDIO", "label": "100nF", "min_nf": 68, "max_nf": 220, "max_dist_mm": 4.0}
+      ],
+      "notes": ["CSB high selects I2C; SDO selects address 0x76 (GND) / 0x77 (VDDIO)."]
+    },
+    {
+      "name": "DRV8833",
+      "match": "DRV8833",
+      "role": "motor_driver",
+      "decoupling": [
+        {"pin": "VM", "label": "10uF bulk", "min_nf": 4700, "max_nf": 1000000, "max_dist_mm": 8.0},
+        {"pin": "VINT", "label": "2.2uF", "min_nf": 1000, "max_nf": 10000, "max_dist_mm": 6.0}
+      ],
+      "notes": ["VCP needs 10 nF to VM. nFAULT is open-drain and needs a pull-up."]
+    },
+    {
+      "name": "AMS1117",
+      "match": "AMS1117|LM1117|AP2112|LDO",
+      "role": "regulator",
+      "decoupling": [
+        {"pin": "VIN", "label": "10uF input", "min_nf": 4700, "max_nf": 1000000, "max_dist_mm": 10.0},
+        {"pin": "VOUT", "label": "22uF output", "min_nf": 10000, "max_nf": 1000000, "max_dist_mm": 10.0}
+      ],
+      "notes": ["AMS1117 needs >= 22 uF (tantalum/ceramic with ESR) on the output for stability."]
+    }
+  ],
+  "generic_ic": {
+    "supply_pin_regex": "^(VDD\\w*|VCC\\w*|AVDD|DVDD|3V3|VBAT)$",
+    "decoupling": {"label": "100nF", "min_nf": 68, "max_nf": 220, "max_dist_mm": 5.0}
+  }
+}

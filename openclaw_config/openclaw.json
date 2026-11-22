@@ -1,0 +1,58 @@
+{
+  "agents": {
+    "defaults": {
+      "workspace": "${CLAWBOARD_HOME}/openclaw_config/workspace",
+      "model": { "primary": "cerebras/moonshotai-kimi-k3.1-pro-trial" },
+      "skipOptionalBootstrapFiles": ["SOUL.md", "USER.md", "HEARTBEAT.md", "IDENTITY.md"]
+    },
+    "entries": {
+      "clawboard": {
+        "name": "ClawBoard",
+        "description": "PCB design review: KiCad DFM/ERC audit and repair",
+        "workspace": "${CLAWBOARD_HOME}/openclaw_config/workspace",
+        "model": { "primary": "cerebras/moonshotai-kimi-k3.1-pro-trial" }
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "cerebras": {
+        "baseUrl": "https://api.cerebras.ai/v1",
+        "apiKey": "${CEREBRAS_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "moonshotai-kimi-k3.1-pro-trial",
+            "name": "Kimi K3.1 Pro (Cerebras)",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
+            "contextWindow": 131072,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "tools": {
+    "toolSearch": false,
+    "codeMode": false,
+    "allow": ["clawboard-pcb__*"]
+  },
+  "mcp": {
+    "servers": {
+      "clawboard-pcb": {
+        "command": "${CLAWBOARD_PYTHON}",
+        "args": ["${CLAWBOARD_HOME}/pcb-tools/mcp_server.py"],
+        "requestTimeoutMs": 120000,
+        "connectionTimeoutMs": 15000
+      }
+    }
+  },
+  "skills": {
+    "load": {
+      "extraDirs": ["${CLAWBOARD_HOME}/openclaw_config/skills"]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "ClawBoard")(type "KiCad")(uri "${KIPRJMOD}/ClawBoard.kicad_sym")(options "")(descr "ClawBoard sample symbols"))
+)

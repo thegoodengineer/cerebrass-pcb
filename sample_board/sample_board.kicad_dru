@@ -1,0 +1,7 @@
+(version 1)
+
+# Mirrors ClawBoard's power-width rule so KiCad's own DRC reports it too.
+# 0.5 mm nominal; 0.4 mm is the floor allowed for short neck-downs into fine-pitch pads.
+(rule "High-current rail width"
+  (condition "A.NetName == '+5V_VBUS'")
+  (constraint track_width (min 0.4mm)))

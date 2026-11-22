@@ -1,0 +1,12 @@
+{
+  "name": "clawboard",
+  "private": true,
+  "version": "1.0.0",
+  "description": "OpenClaw-powered autonomous PCB design review: DFM/ERC audit, live KiCad patching, Cerebras speed benchmark",
+  "scripts": {
+    "dev": "cd web && npm run dev",
+    "build": "cd web && npm run build",
+    "sample": "python pcb-tools/make_sample_board.py",
+    "test": "python -m unittest discover -s pcb-tools/tests -v"
+  }
+}
