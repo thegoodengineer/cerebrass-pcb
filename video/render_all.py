@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import sys
 
-from film import ASSETS, LEAD, RENDERS, REPO_URL, VO, XFADE, facts, scenes
+import json
+
+from film import ASSETS, HERE, RENDERS, REPO_URL, VO, XFADE, cfacts, clip_len, facts, ops, scenes
 from narrate import duration
 from render_scene import render
 
@@ -29,10 +31,12 @@ def params(scene_id: str) -> dict:
 
 def main() -> None:
     want = {int(a) for a in sys.argv[1:]}
+    # the scenes read the recorded run's facts from this file: no number is typed into the HTML
+    (HERE / "scenes" / "data.js").write_text("window.FILM = " + json.dumps({**facts(), "ops": ops(), "compare": cfacts()}, indent=1) + ";\n", encoding="utf-8")
     for sc in scenes():
         if sc["kind"] != "html" or (want and sc["n"] not in want):
             continue
-        secs = duration(VO / f"{sc['n']:02d}.wav") + LEAD + sc["tail"] + XFADE + 0.6
+        secs = clip_len(sc, duration(VO / f"{sc['n']:02d}.wav")) + XFADE + 0.6
         out = RENDERS / f"s{sc['n']:02d}.webm"
         render(sc["id"], secs, out, params(sc["id"]), shot=ASSETS / f"frame_{sc['id']}.png")
         print(f"  s{sc['n']:02d} {sc['id']:<8} {secs:5.2f}s -> {out.name}")

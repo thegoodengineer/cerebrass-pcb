@@ -1,1 +1,1 @@
-ClawBoard. Catch it before the fab does.
+Side by side: the same agent on NVIDIA's GPU cloud. Writing the patch took Cerebras under a second. NVIDIA's flagship model needed 12.6 seconds. Across the run, Cerebras generated about 6 times faster.

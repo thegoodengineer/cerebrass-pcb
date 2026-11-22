@@ -20,6 +20,7 @@ const SAMPLE = path.join(REPO, 'sample_board');
 const TOOLS_DIR = path.join(REPO, 'pcb-tools');
 
 // ---------------------------------------------------------------------------------- env
+const fromDotEnv = globalThis.__clawboardDotEnvKeys || (globalThis.__clawboardDotEnvKeys = new Set());
 function loadDotEnv() {
   const file = path.join(REPO, '.env');
   if (!fs.existsSync(file)) return;
@@ -28,7 +29,8 @@ function loadDotEnv() {
     if (!m || line.trim().startsWith('#')) continue;
     let v = m[2].trim();
     if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
-    if (process.env[m[1]] === undefined) process.env[m[1]] = v;
+    // values saved in .env win over empty placeholders, and are re-read before every run (no restart needed after editing .env)
+    if (v !== '' && (fromDotEnv.has(m[1]) || !process.env[m[1]])) { process.env[m[1]] = v; fromDotEnv.add(m[1]); }
   }
 }
 loadDotEnv();
@@ -73,6 +75,7 @@ function openclawInfo() {
 }
 
 function publicConfig() {
+  loadDotEnv();
   const d = laneDefs();
   const oc = openclawInfo();
   return {

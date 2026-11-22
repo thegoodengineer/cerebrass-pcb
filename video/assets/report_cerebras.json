@@ -1,0 +1,45 @@
+{
+ "run_id": "3484928c",
+ "lane": "cerebras",
+ "label": "Cerebras",
+ "mode": "live",
+ "engine": "OpenClaw agent harness (Gateway /v1/chat/completions, one agent turn)",
+ "endpoint_host": "api.cerebras.ai",
+ "model": "moonshotai-kimi-k3.1-pro-trial",
+ "started_at": "2026-11-22T18:31:46.864Z",
+ "finished_at": "2026-11-22T18:34:04.357Z",
+ "agent_loop_ms": null,
+ "wall_ms": 137493,
+ "llm_ms": 0,
+ "tool_ms": 0,
+ "harness_setup_ms": null,
+ "totals": {
+  "llm_calls": 0,
+  "provider_queue_ms": 0,
+  "busy_retries": 0,
+  "busy_retry_wait_ms": 0,
+  "prompt_tokens": 0,
+  "cached_prompt_tokens": 0,
+  "completion_tokens": 0,
+  "first_token_ms": null,
+  "tps_generation": 0,
+  "tokens_estimated": false
+ },
+ "definitions": {
+  "tps_generation": "completion tokens / time from first streamed token to end of response, summed over all calls",
+  "tps_end_to_end": "completion tokens / full request duration including time to first token",
+  "agent_loop_ms": "first model request to agent sign-off: model time + tool time. This is the headline elapsed time",
+  "wall_ms": "run start to agent sign-off; includes harness setup and tool time, excludes gateway warm-up and the KiCad oracle",
+  "harness_setup_ms": "run start to the first model request (session, MCP server and prompt assembly inside the agent harness)"
+ },
+ "requests": [],
+ "verification": {
+  "rung1_patch_steps": [],
+  "rung2_audit_before": null,
+  "rung2_audit_after": null,
+  "rung3_kicad_oracle": "pending or not available"
+ },
+ "agent_sign_off": "",
+ "status": "error",
+ "error": "OpenClaw gateway returned HTTP 500: {\"error\":{\"message\":\"internal error\",\"type\":\"api_error\"}}"
+}

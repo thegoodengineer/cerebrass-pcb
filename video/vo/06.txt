@@ -1,1 +1,1 @@
-On Cerebras, Kimi generated at 506 tokens per second. The whole review took 4 model calls.
+Speed is what makes this feel live. On Cerebras, Kimi wrote the whole 9-operation patch in under a second, at 1,458 tokens per second.

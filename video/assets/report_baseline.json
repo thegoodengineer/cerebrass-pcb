@@ -1,0 +1,330 @@
+{
+ "run_id": "3484928c",
+ "lane": "baseline",
+ "label": "Standard GPU endpoint",
+ "mode": "live",
+ "engine": "OpenClaw agent harness (Gateway /v1/chat/completions, one agent turn)",
+ "endpoint_host": "integrate.api.nvidia.com",
+ "model": "nvidia/nemotron-3-ultra-550b-a55b",
+ "started_at": "2026-11-22T18:33:16.858Z",
+ "finished_at": "2026-11-22T18:36:44.095Z",
+ "agent_loop_ms": 39848,
+ "wall_ms": 207237,
+ "llm_ms": 21332,
+ "tool_ms": 13838,
+ "harness_setup_ms": 167389,
+ "totals": {
+  "llm_calls": 4,
+  "provider_queue_ms": 0,
+  "busy_retries": 0,
+  "busy_retry_wait_ms": 0,
+  "prompt_tokens": 47241,
+  "cached_prompt_tokens": 26304,
+  "completion_tokens": 1523,
+  "first_token_ms": 820,
+  "tps_generation": 85.4,
+  "tokens_estimated": false
+ },
+ "definitions": {
+  "tps_generation": "completion tokens / time from first streamed token to end of response, summed over all calls",
+  "tps_end_to_end": "completion tokens / full request duration including time to first token",
+  "agent_loop_ms": "first model request to agent sign-off: model time + tool time. This is the headline elapsed time",
+  "wall_ms": "run start to agent sign-off; includes harness setup and tool time, excludes gateway warm-up and the KiCad oracle",
+  "harness_setup_ms": "run start to the first model request (session, MCP server and prompt assembly inside the agent harness)"
+ },
+ "requests": [
+  {
+   "n": 1,
+   "started_at": "2026-11-22T18:36:04.247Z",
+   "status": 200,
+   "generation_time_source": "client: first streamed token to end",
+   "ttft_ms": 820,
+   "duration_ms": 2475,
+   "generation_ms": 1655,
+   "prompt_tokens": 8870,
+   "completion_tokens": 162,
+   "cached_tokens": 0,
+   "tokens_source": "api usage",
+   "tps_generation": 97.9,
+   "tps_end_to_end": 65.5,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "clawboard-pcb__inspect_kicad_project"
+   ]
+  },
+  {
+   "n": 2,
+   "started_at": "2026-11-22T18:36:08.325Z",
+   "status": 200,
+   "generation_time_source": "client: first streamed token to end",
+   "ttft_ms": 1123,
+   "duration_ms": 2147,
+   "generation_ms": 1024,
+   "prompt_tokens": 11337,
+   "completion_tokens": 94,
+   "cached_tokens": 8768,
+   "tokens_source": "api usage",
+   "tps_generation": 91.8,
+   "tps_end_to_end": 43.8,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "clawboard-pcb__run_dfm_and_erc_audit"
+   ]
+  },
+  {
+   "n": 3,
+   "started_at": "2026-11-22T18:36:13.084Z",
+   "status": 200,
+   "generation_time_source": "client: first streamed token to end",
+   "ttft_ms": 603,
+   "duration_ms": 12632,
+   "generation_ms": 12029,
+   "prompt_tokens": 12875,
+   "completion_tokens": 982,
+   "cached_tokens": 8768,
+   "tokens_source": "api usage",
+   "tps_generation": 81.6,
+   "tps_end_to_end": 77.7,
+   "finish_reason": "tool_calls",
+   "tool_calls": [
+    "clawboard-pcb__apply_pcb_patch"
+   ]
+  },
+  {
+   "n": 4,
+   "started_at": "2026-11-22T18:36:37.335Z",
+   "status": 200,
+   "generation_time_source": "client: first streamed token to end",
+   "ttft_ms": 942,
+   "duration_ms": 4078,
+   "generation_ms": 3136,
+   "prompt_tokens": 14159,
+   "completion_tokens": 285,
+   "cached_tokens": 8768,
+   "tokens_source": "api usage",
+   "tps_generation": 90.9,
+   "tps_end_to_end": 69.9,
+   "finish_reason": "stop",
+   "tool_calls": []
+  }
+ ],
+ "verification": {
+  "rung1_patch_steps": [
+   {
+    "step": 1,
+    "op": "set_pin_net",
+    "summary": "J1.B5: USB_CC -> USB_CC2 (10 stale segment(s) ripped up; re-routed USB_CC 9.04 mm)",
+    "errors_before": 8,
+    "errors_after": 8,
+    "warnings_after": 1,
+    "resolved": [
+     "USB-CC-J1"
+    ],
+    "introduced": [
+     "USB-CC-J1-CC2"
+    ],
+    "ts": 1795372587214
+   },
+   {
+    "step": 2,
+    "op": "add_component",
+    "summary": "added R2 5.1k (R_0603) at (111.5, 84), 3.5 mm from J1.B5; routed USB_CC2: 10.84 mm, GND: pour",
+    "errors_before": 8,
+    "errors_after": 7,
+    "warnings_after": 1,
+    "resolved": [
+     "USB-CC-J1-CC2"
+    ],
+    "introduced": [],
+    "ts": 1795372587911
+   },
+   {
+    "step": 3,
+    "op": "add_component",
+    "summary": "added C3 100nF (C_0603) at (136.5, 68), 2.4 mm from U1.2; routed +3V3: already touching, GND: pour",
+    "errors_before": 7,
+    "errors_after": 6,
+    "warnings_after": 1,
+    "resolved": [
+     "DECAP-U1-100nF"
+    ],
+    "introduced": [],
+    "ts": 1795372588324
+   },
+   {
+    "step": 4,
+    "op": "add_component",
+    "summary": "added R3 4.7k (R_0603) at (134.5, 62), 3.4 mm from J4.4; routed I2C_SCL: 3.1 mm, +3V3: 2.35 mm",
+    "errors_before": 6,
+    "errors_after": 5,
+    "warnings_after": 1,
+    "resolved": [
+     "I2C-PU-I2C_SCL"
+    ],
+    "introduced": [],
+    "ts": 1795372589161
+   },
+   {
+    "step": 5,
+    "op": "add_component",
+    "summary": "added R4 4.7k (R_0603) at (131.5, 67), 3.7 mm from J4.3; routed I2C_SDA: 3.82 mm, +3V3: already touching",
+    "errors_before": 5,
+    "errors_after": 4,
+    "warnings_after": 1,
+    "resolved": [
+     "I2C-PU-I2C_SDA"
+    ],
+    "introduced": [],
+    "ts": 1795372589838
+   },
+   {
+    "step": 6,
+    "op": "move_footprint",
+    "summary": "moved C5 (118.37, 89.61) -> (128.5, 76.5) rot 180; ripped 2 segment(s); rerouted +3V3: 11.56 mm",
+    "errors_before": 4,
+    "errors_after": 3,
+    "warnings_after": 0,
+    "resolved": [
+     "DECAP-FAR-C5",
+     "PLACE-GRID-C5"
+    ],
+    "introduced": [],
+    "ts": 1795372591344
+   },
+   {
+    "step": 7,
+    "op": "set_track_width",
+    "summary": "+5V_VBUS: 26 of 28 segment(s) widened 0.1 -> 0.5 mm; 2 pad-entry segment(s) kept narrower to hold clearance",
+    "errors_before": 3,
+    "errors_after": 2,
+    "warnings_after": 0,
+    "resolved": [
+     "PWR-W-+5V_VBUS"
+    ],
+    "introduced": [],
+    "ts": 1795372591583
+   },
+   {
+    "step": 8,
+    "op": "move_via",
+    "summary": "moved GND via (157.975, 83.5) -> (158.25, 83.5), now >= 0.20 mm from other nets",
+    "errors_before": 2,
+    "errors_after": 1,
+    "warnings_after": 0,
+    "resolved": [
+     "CLR-GND-UART_RX"
+    ],
+    "introduced": [],
+    "ts": 1795372591886
+   },
+   {
+    "step": 9,
+    "op": "route_net",
+    "summary": "UART_TX: routed 1 connection(s), 31.22 mm, 2 via(s), width 0.25 mm",
+    "errors_before": 1,
+    "errors_after": 0,
+    "warnings_after": 0,
+    "resolved": [
+     "UNROUTED-UART_TX"
+    ],
+    "introduced": [],
+    "ts": 1795372596133
+   }
+  ],
+  "rung2_audit_before": {
+   "summary": {
+    "errors": 8,
+    "warnings": 1,
+    "info": 0
+   },
+   "issues": [
+    {
+     "id": "CLR-GND-UART_RX",
+     "title": "Clearance 0.050 mm between track on UART_RX and via on GND (min 0.127 mm)",
+     "severity": "error",
+     "rule": "copper_clearance"
+    },
+    {
+     "id": "DECAP-FAR-C5",
+     "title": "C5 (100nF) is 19.1 mm from U3 VDD(8), VDDIO(6) (max 4.0 mm)",
+     "severity": "error",
+     "rule": "decoupling_too_far"
+    },
+    {
+     "id": "DECAP-U1-100nF",
+     "title": "U1 (ESP32-S3-WROOM-1): no 100nF decoupling capacitor on +3V3",
+     "severity": "error",
+     "rule": "decoupling_missing"
+    },
+    {
+     "id": "I2C-PU-I2C_SCL",
+     "title": "I2C line I2C_SCL (SCL) has no pull-up resistor",
+     "severity": "error",
+     "rule": "i2c_pullup_missing"
+    },
+    {
+     "id": "I2C-PU-I2C_SDA",
+     "title": "I2C line I2C_SDA (SDA) has no pull-up resistor",
+     "severity": "error",
+     "rule": "i2c_pullup_missing"
+    },
+    {
+     "id": "PWR-W-+5V_VBUS",
+     "title": "Power net +5V_VBUS routed at 0.1 mm (needs >= 0.5 mm)",
+     "severity": "error",
+     "rule": "power_track_width"
+    },
+    {
+     "id": "UNROUTED-UART_TX",
+     "title": "Net UART_TX has 1 unrouted connection(s)",
+     "severity": "error",
+     "rule": "unrouted_net"
+    },
+    {
+     "id": "USB-CC-J1",
+     "title": "J1: CC1 and CC2 are tied together on net USB_CC",
+     "severity": "error",
+     "rule": "usb_c_cc_pulldown"
+    },
+    {
+     "id": "PLACE-GRID-C5",
+     "title": "C5 is off the 0.25 mm placement grid (at 118.37, 89.61)",
+     "severity": "warning",
+     "rule": "placement_off_grid"
+    }
+   ]
+  },
+  "rung2_audit_after": {
+   "fab_house": "jlcpcb",
+   "profile": "2-layer, 1 oz",
+   "pass": true,
+   "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "info": 0
+   },
+   "rules_checked": [
+    "usb_c_cc_pulldown",
+    "decoupling",
+    "i2c_pullup",
+    "unconnected_pins",
+    "schematic_pcb_sync",
+    "min_track_width",
+    "power_track_width",
+    "copper_clearance",
+    "unrouted_nets",
+    "pour_connectivity",
+    "via_geometry",
+    "copper_to_edge",
+    "placement_grid",
+    "courtyard_overlap"
+   ],
+   "issues": [],
+   "elapsed_ms": 40
+  },
+  "rung3_kicad_oracle": "pending or not available"
+ },
+ "agent_sign_off": "```\nPASS - 8 errors -> 0, 9 operations\n- USB-CC-J1: split CC2 to new net USB_CC2, added 5.1k Rd near J1.B5\n- DECAP-U1-100nF: added C3 100nF near U1.2\n- I2C-PU-I2C_SCL: added R3 4.7k pull-up near J4.4\n- I2C-PU-I2C_SDA: added R4 4.7k pull-up near J4.3\n- DECAP-FAR-C5: moved C5 next to U3.6 (also fixed PLACE-GRID-C5)\n- PWR-W-+5V_VBUS: widened +5V_VBUS tracks from 0.1 to 0.5 mm\n- CLR-GND-UART_RX: moved GND via to restore 0.127 mm clearance\n- UNROUTED-UART_TX: routed UART_TX (U1.37 -> J3.2)\nNot verified here: KiCad DRC/ERC oracle (runs after the agent).\n```",
+ "status": "done",
+ "error": null
+}

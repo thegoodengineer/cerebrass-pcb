@@ -1,1 +1,1 @@
-This ESP32 board hides six classic bugs: shorted USB-C pins, a missing decoupling capacitor, no I2C pull-ups, a hair-thin power trace, a clearance violation and an unrouted net.
+This ESP32 board hides six classic bugs, from shorted USB-C pins to an unrouted net.

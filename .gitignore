@@ -12,6 +12,7 @@ openclaw_config/openclaw.resolved.json
 video/assets/*.webm
 video/assets/*_v1.*
 video/assets/music.wav
+video/assets/voices/
 video/assets/frame_*.png
 video/renders/
 video/clips/

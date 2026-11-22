@@ -1,0 +1,117 @@
+{
+ "zoom": 1.25,
+ "engine": "openclaw",
+ "milestones": [
+  {
+   "t": 3.66,
+   "event": "click_compare",
+   "engine": "openclaw"
+  },
+  {
+   "t": 142.79,
+   "event": "cerebras:lane_error",
+   "error": "OpenClaw gateway returned HTTP 500: {\"error\":{\"message\":\"internal error\",\"type\":\"api_error\"}}"
+  },
+  {
+   "t": 263.19,
+   "event": "baseline:first_model_request"
+  },
+  {
+   "t": 264.77,
+   "event": "baseline:llm_1_done",
+   "tps": 97.9,
+   "ms": 2475
+  },
+  {
+   "t": 265.31,
+   "event": "baseline:tool_inspect_kicad_project"
+  },
+  {
+   "t": 268.67,
+   "event": "baseline:llm_2_done",
+   "tps": 91.8,
+   "ms": 2147
+  },
+  {
+   "t": 269.24,
+   "event": "baseline:tool_run_dfm_and_erc_audit"
+  },
+  {
+   "t": 283.67,
+   "event": "baseline:llm_3_done",
+   "tps": 81.6,
+   "ms": 12632
+  },
+  {
+   "t": 284.21,
+   "event": "baseline:tool_apply_pcb_patch"
+  },
+  {
+   "t": 285.3,
+   "event": "baseline:patch_step",
+   "n": 1,
+   "errors_after": 8
+  },
+  {
+   "t": 286.35,
+   "event": "baseline:patch_step",
+   "n": 2,
+   "errors_after": 7
+  },
+  {
+   "t": 286.9,
+   "event": "baseline:patch_step",
+   "n": 3,
+   "errors_after": 6
+  },
+  {
+   "t": 287.46,
+   "event": "baseline:patch_step",
+   "n": 4,
+   "errors_after": 5
+  },
+  {
+   "t": 287.99,
+   "event": "baseline:patch_step",
+   "n": 5,
+   "errors_after": 4
+  },
+  {
+   "t": 289.62,
+   "event": "baseline:patch_step",
+   "n": 7,
+   "errors_after": 2
+  },
+  {
+   "t": 290.19,
+   "event": "baseline:patch_step",
+   "n": 8,
+   "errors_after": 1
+  },
+  {
+   "t": 294.62,
+   "event": "baseline:patch_step",
+   "n": 9,
+   "errors_after": 0
+  },
+  {
+   "t": 294.62,
+   "event": "baseline:audit_pass"
+  },
+  {
+   "t": 299.43,
+   "event": "baseline:llm_4_done",
+   "tps": 90.9,
+   "ms": 4078
+  },
+  {
+   "t": 302.15,
+   "event": "baseline:lane_done",
+   "error": null
+  },
+  {
+   "t": 309.35,
+   "event": "end"
+  }
+ ]
+}

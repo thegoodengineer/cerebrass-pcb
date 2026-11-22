@@ -4,30 +4,33 @@
     python video/narrate.py          # every line
     python video/narrate.py 4 6      # regenerate single lines
 
-Voice: Microsoft Edge neural TTS (edge-tts, en-US-AndrewNeural). No GPU needed.
+Voice engines, tried in this order (force one with CLAWBOARD_TTS=edge|piper|sapi):
+  1. edge-tts, en-US-AndrewNeural (online, Microsoft Edge neural voice)
+  2. Piper, en_US-ryan-high (offline neural voice, open source; model under assets/voices/)
+  3. Windows System.Speech (offline, robotic - last resort)
 Words that TTS tends to mangle are respelled in the spoken text only (see film.py):
 KiCad -> "Key-CAD", ESP32 -> "E S P thirty-two", I2C -> "I squared C", K3.1 -> "K three point one".
 """
 from __future__ import annotations
 
 import asyncio
+import os
 import subprocess
 import sys
 import wave
 
-import edge_tts
 import imageio_ffmpeg
 
-from film import VO, scenes
+from film import ASSETS, VO, scenes
 
-import os
-
-VOICE = "en-US-AndrewNeural"
-RATE = "+6%"
-USE_SAPI = os.environ.get("CLAWBOARD_TTS") == "sapi"
+ENGINE = os.environ.get("CLAWBOARD_TTS", "auto")
+EDGE_VOICE = "en-US-AndrewNeural"
+EDGE_RATE = "+6%"
+PIPER_MODEL = ASSETS / "voices" / "en_US-ryan-high.onnx"
+PIPER_LENGTH_SCALE = 0.93            # < 1 speaks a little faster
 SAPI_VOICE = os.environ.get("CLAWBOARD_SAPI_VOICE", "Microsoft David Desktop")
-SAPI_RATE = 1
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
+_piper = None
 
 
 def duration(path) -> float:
@@ -35,28 +38,25 @@ def duration(path) -> float:
         return w.getnframes() / w.getframerate()
 
 
-async def speak(sc: dict) -> float:
-    VO.mkdir(exist_ok=True)
-    stem = VO / f"{sc['n']:02d}"
-    stem.with_suffix(".txt").write_text(sc["text"] + "\n", encoding="utf-8")
-    raw = stem.with_suffix(".mp3")
-    try:
-        if USE_SAPI:
-            raise RuntimeError("offline voice requested")
-        await edge_tts.Communicate(sc["say"], VOICE, rate=RATE).save(str(raw))
-    except Exception as e:  # the online voice is unreachable: fall back to the offline Windows voice
-        raw = stem.with_suffix(".raw.wav")
-        sapi(sc["say"], raw)
-        if not USE_SAPI:
-            print(f"     (edge-tts unavailable: {type(e).__name__}; used the offline Windows voice)")
-    subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", str(raw), "-af", "silenceremove=start_periods=1:start_threshold=-50dB,areverse,"
-                    "silenceremove=start_periods=1:start_threshold=-50dB,areverse", "-ar", "48000", "-ac", "2", str(stem.with_suffix(".wav"))], check=True)
-    raw.unlink()
-    return duration(stem.with_suffix(".wav"))
+async def edge_say(text: str, out) -> None:
+    import edge_tts
+    await edge_tts.Communicate(text, EDGE_VOICE, rate=EDGE_RATE).save(str(out))
 
 
-def sapi(text: str, out) -> None:
-    """Offline fallback: Windows System.Speech (no network)."""
+def piper_say(text: str, out) -> None:
+    global _piper
+    from piper import PiperVoice
+    if _piper is None:
+        _piper = PiperVoice.load(str(PIPER_MODEL))
+    with wave.open(str(out), "wb") as wf:
+        try:
+            from piper import SynthesisConfig
+            _piper.synthesize_wav(text, wf, syn_config=SynthesisConfig(length_scale=PIPER_LENGTH_SCALE))
+        except (ImportError, AttributeError, TypeError):  # older piper-tts API
+            _piper.synthesize(text, wf)
+
+
+def sapi_say(text: str, out) -> None:
     txt = out.with_suffix(".say.txt")
     txt.write_text(text, encoding="utf-8")
     ps = (
@@ -64,11 +64,41 @@ def sapi(text: str, out) -> None:
         "$v = $s.GetInstalledVoices() | Where-Object { $_.Enabled } | ForEach-Object { $_.VoiceInfo.Name }; "
         f"$pick = @('{SAPI_VOICE}', 'Microsoft David Desktop', 'Microsoft Mark', 'Microsoft Zira Desktop') | Where-Object {{ $v -contains $_ }} | Select-Object -First 1; "
         "if ($pick) { $s.SelectVoice($pick) }; "
-        f"$s.Rate = {SAPI_RATE}; $s.SetOutputToWaveFile('{out}'); "
+        f"$s.Rate = 1; $s.SetOutputToWaveFile('{out}'); "
         f"$s.Speak([IO.File]::ReadAllText('{txt}', [Text.Encoding]::UTF8)); $s.Dispose()"
     )
     subprocess.run(["powershell.exe", "-NoProfile", "-Command", ps], check=True)
     txt.unlink()
+
+
+async def speak(sc: dict) -> tuple[float, str]:
+    VO.mkdir(exist_ok=True)
+    stem = VO / f"{sc['n']:02d}"
+    stem.with_suffix(".txt").write_text(sc["text"] + "\n", encoding="utf-8")
+    raw, used = None, None
+    if ENGINE in ("auto", "edge"):
+        try:
+            raw = stem.with_suffix(".raw.mp3")
+            await edge_say(sc["say"], raw)
+            used = "edge-tts"
+        except Exception:
+            raw.unlink(missing_ok=True)
+    if used is None and ENGINE in ("auto", "piper") and PIPER_MODEL.exists():
+        try:
+            raw = stem.with_suffix(".raw.wav")
+            piper_say(sc["say"], raw)
+            used = "piper"
+        except Exception as e:
+            print(f"     piper failed: {type(e).__name__}: {str(e)[:120]}")
+            raw.unlink(missing_ok=True)
+    if used is None:
+        raw = stem.with_suffix(".raw.wav")
+        sapi_say(sc["say"], raw)
+        used = "windows-sapi"
+    trim = "silenceremove=start_periods=1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_threshold=-50dB,areverse"
+    subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", str(raw), "-af", trim, "-ar", "48000", "-ac", "2", str(stem.with_suffix(".wav"))], check=True)
+    raw.unlink()
+    return duration(stem.with_suffix(".wav")), used
 
 
 async def main() -> None:
@@ -77,11 +107,11 @@ async def main() -> None:
     for sc in scenes():
         wav = VO / f"{sc['n']:02d}.wav"
         if want and sc["n"] not in want and wav.exists():
-            d = duration(wav)
+            d, used = duration(wav), "kept"
         else:
-            d = await speak(sc)
+            d, used = await speak(sc)
         total += d
-        print(f"  {sc['n']:02d} {sc['id']:<16} {d:5.2f}s  {sc['text'][:86]}")
+        print(f"  {sc['n']:02d} {sc['id']:<16} {d:5.2f}s  [{used}]  {sc['text'][:70]}")
     print(f"narration total {total:.1f}s")
 
 

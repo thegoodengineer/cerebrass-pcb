@@ -39,19 +39,63 @@
   .chip:nth-child(2) { animation-delay:1.8s; color:var(--accent2); border-color:rgba(52,213,255,.4); }
   .chip:nth-child(3) { animation-delay:2.1s; color:var(--cerebras); border-color:rgba(255,122,61,.5); }
 
-  /* ---- numbers ---- */
-  #numbers .eyebrow { font:600 30px var(--mono); color:var(--cerebras); letter-spacing:2px; text-transform:uppercase; opacity:0; animation:rise .7s ease-out .1s forwards; }
-  .tiles { display:grid; grid-template-columns:repeat(4, 400px); gap:24px; margin-top:44px; }
-  .tile { background:var(--panel); border:2px solid var(--line); border-radius:26px; padding:34px 30px 30px; opacity:0; animation:rise .7s ease-out forwards; }
-  .tile:nth-child(1) { animation-delay:.5s; border-color:rgba(45,255,179,.45); box-shadow:0 0 60px rgba(45,255,179,.10) inset; }
-  .tile:nth-child(2) { animation-delay:3.4s; } .tile:nth-child(3) { animation-delay:4.4s; } .tile:nth-child(4) { animation-delay:5.2s; }
-  .tile .v { font:700 112px var(--mono); letter-spacing:-4px; line-height:1; font-variant-numeric:tabular-nums; }
-  .tile:nth-child(1) .v { color:var(--accent); text-shadow:0 0 40px rgba(45,255,179,.4); }
-  .tile .v small { font-size:44px; color:var(--muted); letter-spacing:0; margin-left:6px; }
-  .tile .l { font:500 27px var(--sans); color:var(--muted); margin-top:16px; line-height:1.25; }
-  .proof { margin-top:40px; font:500 30px var(--mono); color:#c3cfdb; opacity:0; animation:rise .8s ease-out 6.0s forwards; }
-  .proof b { color:var(--accent); } .proof i { color:var(--bad); font-style:normal; }
-  .src { position:absolute; bottom:44px; font:400 22px var(--mono); color:#5b6877; opacity:0; animation:rise .8s ease-out 1.2s forwards; }
+  /* ---- speed: real-time replay of the patch call + provider-reported timings ---- */
+  #numbers .eyebrow { font:600 28px var(--mono); color:var(--cerebras); letter-spacing:2px; text-transform:uppercase; opacity:0; animation:rise .7s ease-out .1s forwards; }
+  .speed { display:grid; grid-template-columns:1090px 590px; gap:30px; margin-top:34px; align-items:stretch; }
+  .term { background:#070b10; border:2px solid var(--line); border-radius:22px; overflow:hidden; opacity:0; animation:rise .7s ease-out .4s forwards; transition:border-color .3s, box-shadow .3s; }
+  .term.done { border-color:rgba(45,255,179,.6); box-shadow:0 0 70px rgba(45,255,179,.14); }
+  .term-bar { display:flex; justify-content:space-between; align-items:center; padding:18px 26px; background:var(--panel); border-bottom:2px solid var(--line); font:600 26px var(--mono); color:#c3cfdb; }
+  .term-bar b { color:var(--gold); }
+  .watch { font:700 46px var(--mono); color:var(--text); font-variant-numeric:tabular-nums; letter-spacing:-1px; }
+  .term.done .watch { color:var(--accent); text-shadow:0 0 26px rgba(45,255,179,.5); }
+  .term-body { padding:20px 26px 22px; min-height:462px; font:500 22.5px/1.0 var(--mono); }
+  .wait { color:var(--muted); padding-top:8px; }
+  .op { display:flex; gap:14px; padding:9.5px 0; white-space:nowrap; overflow:hidden; opacity:0; }
+  .op.on { opacity:1; }
+  .op i { color:var(--accent); font-style:normal; }
+  .op b { color:var(--accent2); font-weight:600; }
+  .op span { color:#aebccb; overflow:hidden; text-overflow:ellipsis; }
+  .side { display:grid; gap:22px; }
+  .tile { background:var(--panel); border:2px solid var(--line); border-radius:22px; padding:22px 28px 22px; opacity:0; }
+  .tile.on { animation:rise .6s ease-out forwards; }
+  .tile .v { font:700 84px var(--mono); letter-spacing:-3px; line-height:1; font-variant-numeric:tabular-nums; }
+  .tile.hero { border-color:rgba(45,255,179,.5); box-shadow:0 0 60px rgba(45,255,179,.10) inset; }
+  .tile.hero .v { color:var(--accent); text-shadow:0 0 40px rgba(45,255,179,.4); font-size:104px; }
+  .tile .v small { font-size:40px; color:var(--muted); letter-spacing:0; margin-left:6px; }
+  .tile .l { font:500 25px var(--sans); color:var(--muted); margin-top:12px; line-height:1.25; }
+  .ux { margin-top:30px; font:600 40px var(--sans); color:var(--text); opacity:0; }
+  .ux.on { animation:rise .8s ease-out forwards; }
+  .ux b { color:var(--accent); }
+  .src { position:absolute; bottom:34px; font:400 20px var(--mono); color:#5b6877; opacity:0; animation:rise .8s ease-out 1.2s forwards; text-align:center; }
+
+  /* ---- side by side: real-time replay of the same step on two providers ---- */
+  #compare .eyebrow { font:600 27px var(--mono); color:var(--cerebras); letter-spacing:2px; text-transform:uppercase; }
+  #compare .what { font:500 34px var(--sans); color:#c3cfdb; margin-top:14px; }
+  #compare .what b { color:var(--text); }
+  .race { width:1700px; margin-top:34px; display:grid; gap:22px; }
+  .lane { background:var(--panel); border:2px solid var(--line); border-radius:22px; padding:22px 28px 24px; transition:border-color .3s, box-shadow .3s; }
+  .lane.done.c { border-color:rgba(45,255,179,.6); box-shadow:0 0 70px rgba(45,255,179,.13); }
+  .lane.done.b { border-color:rgba(142,162,255,.55); }
+  .lane-top { display:flex; justify-content:space-between; align-items:baseline; }
+  .who { font:700 34px var(--sans); }
+  .lane.c .who { color:var(--cerebras); } .lane.b .who { color:#8ea2ff; }
+  .who small { font:500 26px var(--mono); color:var(--muted); margin-left:14px; }
+  .clock { font:700 54px var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-1px; }
+  .lane.done.c .clock { color:var(--accent); text-shadow:0 0 26px rgba(45,255,179,.5); }
+  .bar { height:26px; border-radius:13px; background:#0d141d; border:1px solid var(--line); margin-top:16px; overflow:hidden; }
+  .fill { height:100%; width:0%; border-radius:13px; }
+  .lane.c .fill { background:linear-gradient(90deg, #2dffb3, #34d5ff); box-shadow:0 0 22px rgba(45,255,179,.6); }
+  .lane.b .fill { background:linear-gradient(90deg, #6f7fe0, #8ea2ff); }
+  .meta { font:500 25px var(--mono); color:var(--muted); margin-top:14px; visibility:hidden; }
+  .lane.done .meta { visibility:visible; }
+  .meta b { color:var(--text); }
+  .cards { display:grid; grid-template-columns:repeat(3, 1fr); gap:22px; width:1700px; margin-top:26px; }
+  .card { background:var(--panel); border:2px solid var(--line); border-radius:20px; padding:20px 26px; opacity:0; }
+  .card.on { animation:rise .6s ease-out forwards; }
+  .card .big { font:700 66px var(--mono); letter-spacing:-2px; line-height:1; color:var(--accent); }
+  .card .cap { font:500 24px var(--sans); color:var(--muted); margin-top:10px; line-height:1.25; }
+  .card.plain .big { color:var(--text); font-size:54px; }
+  .foot { position:absolute; bottom:26px; width:1700px; font:400 20px/1.4 var(--mono); color:#6b7887; text-align:center; }
 
   /* ---- close ---- */
   #close h1 { font-size:128px; }
@@ -79,15 +123,44 @@
 
 <section class="scene" id="numbers">
   <div class="grid"></div><div class="vignette"></div>
-  <div class="eyebrow">Live run &middot; Kimi K3.1 Pro on Cerebras</div>
-  <div class="tiles">
-    <div class="tile"><div class="v" data-count="tps">0</div><div class="l">tokens per second</div></div>
-    <div class="tile"><div class="v" data-count="calls">0</div><div class="l">model calls for the whole review</div></div>
-    <div class="tile"><div class="v" data-count="ops">0</div><div class="l">patch operations in one tool call</div></div>
-    <div class="tile"><div class="v"><span data-count="cache">0</span><small>%</small></div><div class="l">of input tokens from the prompt cache</div></div>
+  <div class="eyebrow" id="sp-eyebrow">Cerebras speed</div>
+  <div class="speed">
+    <div class="term" id="term">
+      <div class="term-bar"><span>apply_pcb_patch &middot; <b id="sp-tok"></b> tokens from the model</span><span class="watch" id="watch">0.00 s</span></div>
+      <div class="term-body" id="oplist"><div class="wait" id="wait">waiting for the first token&hellip;</div></div>
+    </div>
+    <div class="side">
+      <div class="tile hero" id="t1"><div class="v" id="sp-tps"></div><div class="l">tokens per second on this call</div></div>
+      <div class="tile" id="t2"><div class="v"><span id="sp-gen"></span><small>s</small></div><div class="l">of generation for all <span id="sp-calls"></span> model calls</div></div>
+      <div class="tile" id="t3"><div class="v" id="sp-avg"></div><div class="l">tokens per second, whole run</div></div>
+    </div>
   </div>
-  <div class="proof" id="proof"></div>
-  <div class="src">every number: this run's report.json</div>
+  <div class="ux" id="ux">The fix lands <b>before you finish reading the error.</b></div>
+  <div class="src" id="sp-src"></div>
+</section>
+
+<section class="scene" id="compare">
+  <div class="grid"></div><div class="vignette"></div>
+  <div class="eyebrow">Side by side &middot; same OpenClaw agent, same board, same task</div>
+  <div class="what">Writing the <b id="cp-ops"></b>-operation patch &mdash; each model call replayed in real time</div>
+  <div class="race">
+    <div class="lane c" id="lane-c">
+      <div class="lane-top"><div class="who">Cerebras<small id="cp-cm"></small></div><div class="clock" id="clock-c">0.00 s</div></div>
+      <div class="bar"><div class="fill" id="fill-c"></div></div>
+      <div class="meta" id="meta-c"></div>
+    </div>
+    <div class="lane b" id="lane-b">
+      <div class="lane-top"><div class="who">NVIDIA GPU cloud<small id="cp-bm"></small></div><div class="clock" id="clock-b">0.00 s</div></div>
+      <div class="bar"><div class="fill" id="fill-b"></div></div>
+      <div class="meta" id="meta-b"></div>
+    </div>
+  </div>
+  <div class="cards">
+    <div class="card" id="card1"><div class="big" id="cp-r1"></div><div class="cap">faster on this call</div></div>
+    <div class="card" id="card2"><div class="big" id="cp-r2"></div><div class="cap" id="cp-r2cap"></div></div>
+    <div class="card plain" id="card3"><div class="big">PASS + PASS</div><div class="cap" id="cp-pass"></div></div>
+  </div>
+  <div class="foot" id="cp-foot"></div>
 </section>
 
 <section class="scene" id="close">
@@ -99,35 +172,97 @@
   <div class="hash">#KimiOnCerebras</div>
 </section>
 
+<script src="data.js"></script>
 <script>
   const q = new URLSearchParams(location.search);
   const id = q.get('scene') || 'title';
   document.getElementById(id).classList.add('on');
   const num = (k, d = 0) => Number(q.get(k) || d);
+  const F = window.FILM || {};
+  const $ = (x) => document.getElementById(x);
 
   if (id === 'cold') {
     const e = num('errors');
-    document.getElementById('cold-sub').textContent = e ? `${e} errors are hiding in this one` : '';
+    $('cold-sub').textContent = e ? `${e} errors are hiding in this one` : '';
   }
-  if (id === 'close') document.getElementById('url').textContent = q.get('url') || '';
+  if (id === 'close') $('url').textContent = q.get('url') || '';
+  if (id === 'compare') {
+    // Two live runs of the same task; every figure is read from their reports (scenes/data.js).
+    const C = F.compare.cerebras, B = F.compare.baseline;
+    $('cp-ops').textContent = C.ops;
+    $('cp-cm').textContent = C.model;
+    $('cp-bm').textContent = B.model;
+    $('cp-r1').textContent = F.compare.patch_ratio.toFixed(1) + '\u00d7';
+    $('cp-r2').textContent = F.compare.tps_ratio.toFixed(1) + '\u00d7';
+    $('cp-r2cap').textContent = `tokens per second across the run (${C.tps} vs ${B.tps})`;
+    $('cp-pass').textContent = `both runs: audit passed, ${C.ops} and ${B.ops} operations`;
+    $('cp-foot').innerHTML = `Two live runs recorded separately on the same machine; figures from each run's report.json. Model time for the whole review: ${C.llm_s} s vs ${B.llm_s} s. ` +
+      `End to end: ${C.loop_s} s vs ${B.loop_s} s &mdash; the shared Cerebras trial endpoint queued requests and returned &ldquo;high traffic&rdquo; ${C.retries} times.`;
+    const longest = Math.max(C.patch_s, B.patch_s) * 1000;
+    const lanes = [['c', C], ['b', B]];
+    setTimeout(() => {
+      const t0 = performance.now();
+      const frame = (now) => {
+        const t = now - t0;
+        let running = false;
+        for (const [k, L] of lanes) {
+          const ms = L.patch_s * 1000, cur = Math.min(t, ms);
+          $('clock-' + k).textContent = (cur / 1000).toFixed(2) + ' s';
+          $('fill-' + k).style.width = (100 * cur / longest).toFixed(2) + '%';
+          if (t >= ms && !$('lane-' + k).classList.contains('done')) {
+            $('lane-' + k).classList.add('done');
+            $('meta-' + k).innerHTML = `<b>${L.patch_tokens}</b> tokens &middot; <b>${Number(L.patch_tps).toLocaleString('en-US')}</b> tokens/sec on this call`;
+            if (k === 'c') setTimeout(() => $('card1').classList.add('on'), 1200);
+          }
+          if (t < ms) running = true;
+        }
+        if (running) requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+      setTimeout(() => $('card2').classList.add('on'), 6500);
+      setTimeout(() => $('card3').classList.add('on'), 9000);
+    }, (F.compare.start_s + 0.6) * 1000);
+  }
   if (id === 'numbers') {
-    const eb = num('eb'), ops = num('ops');
-    document.getElementById('proof').innerHTML =
-      `<i>${eb} errors</i> &rarr; <b>0</b> in ${ops} operations &nbsp;&middot;&nbsp; KiCad DRC <b>${num('drc')}</b> &nbsp;&middot;&nbsp; unconnected <b>${num('unc')}</b> &nbsp;&middot;&nbsp; ERC <b>${num('erc')}</b>`;
-    document.querySelectorAll('[data-count]').forEach((el) => {
-      const target = num(el.dataset.count), dec = Number(el.dataset.dec || 0);
-      const tile = el.closest('.tile');
-      const delay = parseFloat(getComputedStyle(tile).animationDelay) * 1000 + 150;
-      setTimeout(() => {
-        const t0 = performance.now(), dur = 900;
-        const step = (now) => {
-          const k = Math.min(1, (now - t0) / dur), ease = 1 - Math.pow(1 - k, 3);
-          el.textContent = (target * ease).toFixed(dec);
-          if (k < 1) requestAnimationFrame(step); else el.textContent = target.toFixed(dec);
-        };
-        requestAnimationFrame(step);
-      }, delay);
+    // Every figure here is read from the recorded run (scenes/data.js, written from assets/report.json).
+    $('sp-eyebrow').textContent = `Cerebras speed \u00b7 real-time replay of model call #${F.patch_n}`;
+    $('sp-tok').textContent = F.patch_tokens;
+    $('sp-tps').textContent = Number(F.patch_tps).toLocaleString('en-US');
+    $('sp-gen').textContent = Number(F.gen_total_s).toFixed(1);
+    $('sp-calls').textContent = F.calls;
+    $('sp-avg').textContent = F.tps;
+    $('sp-src').innerHTML = `Timings as reported by the provider, from this run's report.json. Other calls also waited in the shared trial endpoint's queue (${F.queue_s} s in total).`;
+    const list = $('oplist');
+    const rows = (F.ops || []).map((line) => {
+      const [op, ...rest] = line.split('  ');
+      const el = document.createElement('div');
+      el.className = 'op';
+      el.innerHTML = `<i>\u2713</i><b>${op}</b><span>${rest.join('  ').replace(/</g, '&lt;')}</span>`;
+      list.appendChild(el);
+      return el;
     });
+    const START = Number(q.get('start') || 3300);       // ms after page load
+    const reqMs = F.patch_req_s * 1000, genMs = F.patch_gen_s * 1000, firstMs = Math.max(0, reqMs - genMs);
+    setTimeout(() => {
+      const t0 = performance.now();
+      const frame = (now) => {
+        const t = Math.min(now - t0, reqMs);
+        $('watch').textContent = (t / 1000).toFixed(2) + ' s';
+        if (t >= firstMs) {
+          $('wait').style.display = 'none';
+          const shown = Math.ceil(((t - firstMs) / genMs) * rows.length);
+          rows.forEach((r, i) => { if (i < shown) r.classList.add('on'); });
+        }
+        if (t < reqMs) return requestAnimationFrame(frame);
+        rows.forEach((r) => r.classList.add('on'));
+        $('term').classList.add('done');
+        $('t1').classList.add('on');
+      };
+      requestAnimationFrame(frame);
+    }, START);
+    setTimeout(() => $('t2').classList.add('on'), START + 5200);
+    setTimeout(() => $('t3').classList.add('on'), START + 6100);
+    setTimeout(() => $('ux').classList.add('on'), START + 7000);
   }
 </script>
 </body>

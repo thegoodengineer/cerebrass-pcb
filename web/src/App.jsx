@@ -358,7 +358,7 @@ export default function App() {
             <option value="direct">Built-in loop</option>
           </select>
           <button className="btn" disabled={busy} onClick={() => run('single')}>▶ Run audit &amp; fix</button>
-          <button className="btn hero" disabled={busy} onClick={() => run('benchmark')}>⚡ Cerebras vs. Standard GPU</button>
+          <button className="btn hero" disabled={busy} onClick={() => run('benchmark')}>⚡ Cerebras vs. {config?.lanes.baseline.ready ? config.lanes.baseline.label : 'Standard GPU'}</button>
           {busy ? <button className="btn ghost" onClick={() => post('/api/stop')}>Stop</button> : <button className="btn ghost" onClick={() => post('/api/reset')}>Reset</button>}
         </div>
       </header>

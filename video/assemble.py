@@ -17,7 +17,7 @@ from pathlib import Path
 
 import imageio_ffmpeg
 
-from film import ASSETS, FPS, HERE, LEAD, LIMIT_S, RENDERS, VO, XFADE, scenes
+from film import ASSETS, FPS, HERE, LEAD, LIMIT_S, RENDERS, VO, XFADE, clip_len, scenes
 from narrate import duration
 
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
@@ -35,7 +35,17 @@ def cut_points() -> dict[str, float]:
     first = {}
     for m in marks:
         first.setdefault(m["event"], m["t"])
+    compare = {}
+    cmp_file = ASSETS / "compare.webm.json"
+    if cmp_file.exists():
+        cm = {}
+        for m in json.loads(cmp_file.read_text(encoding="utf-8"))["milestones"]:
+            cm.setdefault(m["event"], m["t"])
+        # a few seconds before the slower lane finishes, so the verdict banner arrives on screen
+        last_done = max(v for k, v in cm.items() if k.endswith(":lane_done") or k.endswith(":lane_error") or k.endswith(":lane_stopped"))
+        compare = {"compare": max(0.0, last_done - 4.0)}
     return {
+        **compare,
         "idle": first["board_visible"] + 0.5,
         # a few seconds before the patch lands: the model is writing the patch, then the operations apply
         "patch": max(first["click_run"], first["tool_apply_pcb_patch"] - 3.6),
@@ -44,10 +54,12 @@ def cut_points() -> dict[str, float]:
 
 def build_clip(sc: dict, cuts: dict) -> tuple[Path, float]:
     vo = VO / f"{sc['n']:02d}.wav"
-    d = round(duration(vo) + LEAD + sc["tail"], 3)
+    d = clip_len(sc, duration(vo))
     out = CLIPS / f"c{sc['n']:02d}.mp4"
     if sc["kind"] == "html":
         src, ss = RENDERS / f"s{sc['n']:02d}.webm", 0.6
+    elif sc["cut"] == "compare":
+        src, ss = ASSETS / "compare.webm", cuts["compare"]
     elif sc["cut"] == "oracle":
         # finished state of the same run, recorded once KiCad's check had completed (capture_final.py)
         src, ss = ASSETS / "demo_final.webm", 2.2
@@ -72,7 +84,8 @@ def main() -> None:
     for sc in scenes():
         path, d = build_clip(sc, cuts)
         clips.append((path, d))
-        src = "html" if sc["kind"] == "html" else ("demo_final.webm" if sc["cut"] == "oracle" else f"demo.webm @ {cuts[sc['cut']]:.1f}s")
+        src = "html" if sc["kind"] == "html" else ("demo_final.webm" if sc["cut"] == "oracle" else
+                                                     f"{'compare' if sc['cut'] == 'compare' else 'demo'}.webm @ {cuts[sc['cut']]:.1f}s")
         print(f"  {sc['n']:02d} {sc['id']:<16} {d:5.2f}s  ({src})")
     total = sum(d for _, d in clips) - XFADE * (len(clips) - 1)
     print(f"total {total:.2f}s (limit {LIMIT_S:.0f}s)")
