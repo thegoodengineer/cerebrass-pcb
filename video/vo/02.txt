@@ -1,0 +1,1 @@
+ClawBoard is an OpenClaw agent that reviews and repairs KiCad designs, running Kimi K3.1 Pro on Cerebras.

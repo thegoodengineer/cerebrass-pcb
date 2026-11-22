@@ -1,0 +1,1 @@
+On Cerebras, Kimi generated at 506 tokens per second. The whole review took 4 model calls.

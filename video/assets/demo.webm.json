@@ -1,0 +1,113 @@
+{
+ "zoom": 1.25,
+ "engine": "openclaw",
+ "status": "done",
+ "milestones": [
+  {
+   "t": 0.33,
+   "event": "board_visible"
+  },
+  {
+   "t": 14.41,
+   "event": "click_run",
+   "engine": "openclaw"
+  },
+  {
+   "t": 66.02,
+   "event": "first_model_request"
+  },
+  {
+   "t": 69.14,
+   "event": "llm_1_done",
+   "tps": 591.9
+  },
+  {
+   "t": 69.14,
+   "event": "tool_inspect_kicad_project"
+  },
+  {
+   "t": 73.84,
+   "event": "llm_2_done",
+   "tps": 699.3
+  },
+  {
+   "t": 73.84,
+   "event": "tool_run_dfm_and_erc_audit"
+  },
+  {
+   "t": 92.4,
+   "event": "llm_3_done",
+   "tps": 1458.3
+  },
+  {
+   "t": 92.93,
+   "event": "tool_apply_pcb_patch"
+  },
+  {
+   "t": 94.0,
+   "event": "patch_step",
+   "n": 1,
+   "errors_after": 8
+  },
+  {
+   "t": 94.53,
+   "event": "patch_step",
+   "n": 2,
+   "errors_after": 7
+  },
+  {
+   "t": 95.06,
+   "event": "patch_step",
+   "n": 3,
+   "errors_after": 6
+  },
+  {
+   "t": 95.58,
+   "event": "patch_step",
+   "n": 4,
+   "errors_after": 5
+  },
+  {
+   "t": 96.12,
+   "event": "patch_step",
+   "n": 5,
+   "errors_after": 4
+  },
+  {
+   "t": 96.64,
+   "event": "patch_step",
+   "n": 6,
+   "errors_after": 3
+  },
+  {
+   "t": 97.17,
+   "event": "patch_step",
+   "n": 8,
+   "errors_after": 1
+  },
+  {
+   "t": 99.29,
+   "event": "patch_step",
+   "n": 9,
+   "errors_after": 0
+  },
+  {
+   "t": 99.29,
+   "event": "audit_pass"
+  },
+  {
+   "t": 109.34,
+   "event": "llm_4_done",
+   "tps": 352.6
+  },
+  {
+   "t": 109.87,
+   "event": "lane_done",
+   "error": null
+  },
+  {
+   "t": 199.97,
+   "event": "end"
+  }
+ ]
+}

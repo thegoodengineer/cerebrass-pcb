@@ -1,0 +1,1 @@
+The agent inspects the project, runs the audit, and sends one patch: 9 operations, each re-checked as it lands. 8 errors, down to zero.

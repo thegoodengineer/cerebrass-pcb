@@ -9,6 +9,15 @@ __pycache__/
 web/public/board_preview*.svg
 web/public/schematic_preview*.svg
 openclaw_config/openclaw.resolved.json
+video/assets/*.webm
+video/assets/*_v1.*
+video/assets/music.wav
+video/assets/frame_*.png
+video/renders/
+video/clips/
+video/review/
+video/vo/*.wav
+video/*.mp4
 *-backups/
 *.lck
 fp-info-cache

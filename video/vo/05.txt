@@ -1,0 +1,1 @@
+Then KiCad's own rule checker confirms it: zero errors, nothing unconnected.
